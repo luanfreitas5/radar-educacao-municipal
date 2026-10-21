@@ -1,0 +1,19 @@
+site_name: Radar da Educação Municipal
+site_description: Tipologias de municípios a partir do Censo Escolar, IDEB e IBGE, com análise espacial.
+repo_url: https://github.com/luanfreitas5/radar-educacao-municipal
+theme:
+  name: material
+  language: pt-BR
+nav:
+  - Início: index.md
+  - Arquitetura: architecture.md
+  - Fontes de dados: data_sources.md
+  - Referência da API: reference.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: numpy

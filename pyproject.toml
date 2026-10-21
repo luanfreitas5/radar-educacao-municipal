@@ -1,0 +1,294 @@
+# =============================================================================
+# pyproject.toml — fonte única de verdade para dependências e configuração de
+# ferramentas. Alinhado ao CLAUDE.md (Data Science Projects).
+# Gerenciador: uv. O lock file (uv.lock) DEVE ser commitado (`uv lock`).
+# =============================================================================
+
+[project]
+name = "radar-educacao-municipal"
+version = "0.1.0"
+description = "Tipologias de municípios brasileiros a partir do Censo Escolar, IDEB e IBGE, com análise espacial (Moran e LISA)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Luan Freitas", email = "luan.mgf@gmail.com" }]
+keywords = [
+    "educação",
+    "censo escolar",
+    "ideb",
+    "ibge",
+    "clusterização",
+    "umap",
+    "análise espacial",
+    "moran",
+    "lisa",
+    "ciência de dados",
+]
+classifiers = [ # https://pypi.org/classifiers/
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Natural Language :: Portuguese (Brazilian)",
+]
+
+# --- Dependências de runtime — cada uma justificada pelo escopo do projeto ----
+dependencies = [
+    # Configuração e validação (src/config/, src/schemas/)
+    "pydantic>=2.6",                # validação tipada das configurações YAML
+    "pyyaml>=6.0",                  # leitura dos arquivos em configs/
+    "pandera[polars]>=0.20",        # contratos de dados por camada (bronze -> silver -> gold)
+
+    # Dados tabulares
+    "polars>=1.0",                  # manipulação de dados (preferido sobre pandas)
+    "pyarrow>=15.0",                # leitura/escrita de Parquet e GeoParquet
+    "fastexcel>=0.11",              # leitura das planilhas XLSX do IDEB pelo polars
+    "pandas>=2.1",                  # exigido por geopandas/esda/libpysal (não usado diretamente)
+    "numpy>=1.26",                  # arrays e álgebra linear
+
+    # Ingestão
+    "requests>=2.31",               # download com streaming (INEP e API SIDRA/IBGE)
+    "truststore>=0.9",              # usa o repositório de certificados do SO (INEP não envia o certificado intermediário)
+    "geobr>=0.2.2",                 # malhas municipais do IBGE/IPEA
+
+    # Clusterização e redução de dimensionalidade
+    "scikit-learn>=1.4",            # StandardScaler, KMeans, silhouette, ARI
+    "scipy>=1.11",                  # Kruskal-Wallis e correção FDR (false_discovery_control)
+    "umap-learn>=0.5.5",            # projeção 2D para visualização
+
+    # Análise espacial
+    "geopandas>=1.0",               # geometrias e mapas
+    "libpysal>=4.12",               # matriz de vizinhança (Queen)
+    "esda>=2.6",                    # I de Moran global e local (LISA)
+
+    # Visualização e terminal
+    "matplotlib>=3.8",              # figuras e mapas
+    "seaborn>=0.13",                # estilo e gráficos estatísticos
+    "rich>=13.7",                   # logging e barras de progresso
+]
+
+[tool.uv]
+# O projeto não é instalado como pacote: `src/` é a raiz de importação (ver
+# CLAUDE.md, "Import style"). O pytest resolve os imports por
+# `pythonpath = ["src"]` e, ao executar `python src/main.py`, o diretório do
+# script já entra no `sys.path`.
+package = false
+required-environments = [
+    "sys_platform == 'win32' and platform_machine == 'AMD64'",
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
+
+# --- Dependências de desenvolvimento (não publicadas; PEP 735) --------------
+[dependency-groups]
+dev = [
+    # Lint + format
+    "ruff>=0.5",                    # linter e formatador (substitui flake8/isort/black)
+    # Type checking (roda no CI, não no pre-commit)
+    "basedpyright>=1.13",           # type checker estático (substitui mypy)
+    # Segurança (roda no CI)
+    "bandit>=1.7",                  # análise de segurança do código
+    "pip-audit>=2.7",               # auditoria de vulnerabilidades em dependências
+    "detect-secrets>=1.5",          # detecção de segredos
+    # Qualidade / complexidade / docstrings
+    "vulture>=2.11",                # código morto
+    "refurb>=2.0",                  # sugestões de modernização
+    "xenon>=0.9",                   # limites de complexidade
+    "radon>=6.0",                   # métricas de complexidade
+    "interrogate>=1.7",             # cobertura de docstrings
+    # Testes
+    "pytest>=8.2",
+    "pytest-cov>=5.0",
+    "hypothesis>=6.100",            # testes baseados em propriedades
+    # Notebooks
+    "nbqa>=1.8",                    # aplica linters a notebooks
+    "nbstripout>=0.7",              # remove outputs de notebooks
+    # Workflow
+    "pre-commit>=3.7",
+    "commitizen>=4.0",              # Conventional Commits + CHANGELOG
+    # Documentação
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.25",
+    # Profiling (use sob demanda)
+    "scalene>=1.5",
+    # Jupyter / VS Code
+    "ipykernel>=6.29",
+    "ipywidgets>=8.1",
+    "jupyterlab>=4.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/luanfreitas5/radar-educacao-municipal"
+Documentation = "https://luanfreitas5.github.io/radar-educacao-municipal/"
+Repository = "https://github.com/luanfreitas5/radar-educacao-municipal"
+
+
+# =============================================================================
+# RUFF — lint + format (substitui flake8/isort/black)
+# =============================================================================
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort (organização de imports)
+    "N",      # pep8-naming
+    "UP",     # pyupgrade (sintaxe moderna)
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "SIM",    # flake8-simplify
+    "RET",    # flake8-return
+    "ARG",    # flake8-unused-arguments
+    "PTH",    # flake8-use-pathlib
+    "PD",     # pandas-vet
+    "NPY",    # NumPy-specific rules
+    "PERF",   # perflint
+    "RUF",    # regras específicas do Ruff
+    "PL",     # pylint (subconjunto)
+    "TRY",    # tryceratops
+]
+ignore = [
+    "PLR0913", # muitos argumentos — comum em pipelines
+    "PLR0917", # muitos argumentos posicionais — idem
+    "PLR2004", # "magic value" em comparação — comum em limiares
+    "TRY003",  # mensagem longa em exceção customizada
+    "PD901",   # `df` é o nome padrão para DataFrames (polars) neste projeto
+    "RUF001",  # caracteres tipográficos pt-BR intencionais em strings
+    "RUF002",  # idem, em docstrings
+    "RUF003",  # idem, em comentários
+]
+
+[tool.ruff.lint.isort]
+# `src/` é a raiz de importação: os pacotes de primeira parte são os
+# diretórios dentro dele — não "src" em si.
+known-first-party = [
+    "config",
+    "constants",
+    "exceptions",
+    "ingestion",
+    "modeling",
+    "pipelines",
+    "preprocessing",
+    "reporting",
+    "schemas",
+    "spatial",
+    "utils",
+    "validation",
+    "visualization",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"  # docstrings no formato NumPy
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ARG", "PLR2004", "PD011"]   # fixtures, valores fixos e `.values` em testes
+"notebooks/*" = ["E402", "F401", "F821", "NPY002"]
+"src/main.py" = ["E402"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+# =============================================================================
+# BASEDPYRIGHT — type checking estático (roda no CI)
+# =============================================================================
+[tool.basedpyright]
+pythonVersion = "3.10"
+typeCheckingMode = "standard"
+include = ["src", "tests"]
+# `src/` é a raiz de importação: sem isto, `from config.settings import ...`
+# não resolveria para o type checker.
+extraPaths = ["src"]
+exclude = ["**/__pycache__", "notebooks", "data", "reports", "logs"]
+reportMissingTypeStubs = false
+# libpysal/esda/geobr/umap não publicam tipos completos.
+reportMissingImports = "warning"
+
+# =============================================================================
+# BANDIT — análise de segurança (roda no CI)
+# =============================================================================
+[tool.bandit]
+exclude_dirs = ["tests", "notebooks", ".venv"]
+# B101 (assert): usados apenas para estreitamento de tipo, sempre após uma
+# validação real que levanta exceção própria.
+skips = ["B101"]
+
+# =============================================================================
+# VULTURE — detecção de código morto
+# =============================================================================
+[tool.vulture]
+min_confidence = 80
+paths = ["src"]
+exclude = ["notebooks/"]
+ignore_decorators = ["@field_validator", "@model_validator"]
+ignore_names = ["cls"]
+
+# =============================================================================
+# REFURB — sugestões de modernização
+# =============================================================================
+[tool.refurb]
+ignore = [
+    "FURB126",  # return implícito — às vezes reduz clareza em funções longas
+]
+
+# =============================================================================
+# PYTEST — testes (unit, integração, property-based, comportamentais)
+# =============================================================================
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = [
+    "--strict-markers",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+]
+markers = [
+    "smoke: testes rápidos rodados no pre-commit",
+    "integration: testes de pipeline ponta a ponta",
+    "ml: testes comportamentais / de regressão de métrica",
+    "slow: testes lentos (pulados por padrão no CI)",
+]
+
+# =============================================================================
+# COVERAGE — meta de cobertura >= 80%
+# =============================================================================
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = [
+    "src/main.py",           # orquestração fina de argparse
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+
+# =============================================================================
+# INTERROGATE — cobertura de docstrings
+# =============================================================================
+[tool.interrogate]
+fail-under = 80
+ignore-init-method = true
+ignore-magic = true
+exclude = ["tests", "notebooks", "docs"]
+
+# =============================================================================
+# COMMITIZEN — Conventional Commits + SemVer + CHANGELOG
+# =============================================================================
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.0"
+version_files = [
+    "pyproject.toml:version",
+]
+tag_format = "v$version"
+update_changelog_on_bump = true
+major_version_zero = true  # remova quando sair do 0.x
