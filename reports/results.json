@@ -1,0 +1,270 @@
+{
+  "integrity": {
+    "n_municipalities": 5570,
+    "coverage": {
+      "n_schools": 1.0,
+      "population": 1.0,
+      "gdp_per_capita": 1.0,
+      "ideb_early_years": 0.9748653500897666,
+      "ideb_late_years": 0.9662477558348295
+    },
+    "duplicate_keys": {
+      "gold": 0,
+      "censo_escolar": 0,
+      "ideb": 0,
+      "sidra": 0
+    },
+    "orphan_keys": {
+      "censo_escolar": 0,
+      "ideb": 0,
+      "sidra": 0
+    },
+    "null_share": {
+      "code_muni": 0.0,
+      "name_muni": 0.0,
+      "abbrev_state": 0.0,
+      "region": 0.0,
+      "n_schools": 0.0,
+      "enrollments": 0.0,
+      "teachers": 0.0,
+      "rural_share": 0.0,
+      "municipal_network_share": 0.0,
+      "internet_share": 0.0,
+      "library_share": 0.0,
+      "computer_lab_share": 0.0,
+      "sports_court_share": 0.0,
+      "water_network_share": 0.0,
+      "sewage_network_share": 0.0,
+      "electricity_network_share": 0.0,
+      "students_per_teacher": 0.0,
+      "enrollments_per_school": 0.0,
+      "ideb_early_years": 0.025134649910233394,
+      "ideb_late_years": 0.03375224416517056,
+      "population": 0.0,
+      "area_km2": 0.0,
+      "population_density": 0.0,
+      "gdp_per_capita": 0.0
+    },
+    "violations": [],
+    "passed": true,
+    "gold_sha256": "3eb86d80853a64da7c29146eb6d5f75686e83638b890142b1cf97e56eb5a71d3"
+  },
+  "clustering": {
+    "n_clustered": 5570,
+    "n_dropped": 0,
+    "k": 4,
+    "silhouette": 0.18934784268225305,
+    "selection": [
+      {
+        "k": 3,
+        "inertia": 52361.068422143915,
+        "silhouette": 0.1725631676585659
+      },
+      {
+        "k": 4,
+        "inertia": 46405.422238841944,
+        "silhouette": 0.18934784268225305
+      },
+      {
+        "k": 5,
+        "inertia": 43307.46203697885,
+        "silhouette": 0.1464013109543335
+      },
+      {
+        "k": 6,
+        "inertia": 40363.519090174064,
+        "silhouette": 0.1406255283639178
+      },
+      {
+        "k": 7,
+        "inertia": 38186.309975766475,
+        "silhouette": 0.14323656541498855
+      },
+      {
+        "k": 8,
+        "inertia": 36773.9943633639,
+        "silhouette": 0.13103395274484472
+      },
+      {
+        "k": 9,
+        "inertia": 35407.47177329376,
+        "silhouette": 0.1309018169591403
+      },
+      {
+        "k": 10,
+        "inertia": 34451.91067069643,
+        "silhouette": 0.12678728421080387
+      }
+    ],
+    "stability": {
+      "mean": 0.9781236489296675,
+      "ci_low": 0.947707526768919,
+      "ci_high": 0.9913610542380008,
+      "n_repeats": 30
+    },
+    "outcome_tests": {
+      "ideb_early_years": {
+        "h": 1324.7541701718742,
+        "p_value": 6.260689667150486e-287,
+        "epsilon_squared": 0.24401439863176905,
+        "n": 5430
+      },
+      "ideb_late_years": {
+        "h": 1045.127045623081,
+        "p_value": 2.920687898885828e-226,
+        "epsilon_squared": 0.19422543126241978,
+        "n": 5382
+      }
+    },
+    "descriptions": {
+      "0": "rural_share (+0,9), municipal_network_share (+0,9), computer_lab_share (-0,9)",
+      "1": "water_network_share (+0,9), students_per_teacher (-0,7), library_share (+0,6)",
+      "2": "sewage_network_share (+1,1), rural_share (-0,9), enrollments_per_school (+0,8)",
+      "3": "electricity_network_share (-5,9), internet_share (-3,9), water_network_share (-2,5)"
+    },
+    "median_by_region": {
+      "ideb_early_years": [
+        {
+          "cluster": 0,
+          "Sudeste": 6.1,
+          "Centro-Oeste": 5.4,
+          "Norte": 4.7,
+          "Sul": 5.9,
+          "Nordeste": 5.1
+        },
+        {
+          "cluster": 1,
+          "Sudeste": 6.2,
+          "Centro-Oeste": 6.0,
+          "Norte": 5.2,
+          "Sul": 6.4,
+          "Nordeste": 5.5
+        },
+        {
+          "cluster": 2,
+          "Sudeste": 6.3,
+          "Centro-Oeste": 6.0,
+          "Norte": 5.6,
+          "Sul": 6.2,
+          "Nordeste": 5.4
+        },
+        {
+          "cluster": 3,
+          "Sudeste": null,
+          "Centro-Oeste": null,
+          "Norte": 4.5,
+          "Sul": null,
+          "Nordeste": null
+        }
+      ],
+      "ideb_late_years": [
+        {
+          "cluster": 0,
+          "Centro-Oeste": 4.7,
+          "Nordeste": 4.3,
+          "Sudeste": 4.7,
+          "Norte": 4.2,
+          "Sul": 4.8
+        },
+        {
+          "cluster": 1,
+          "Centro-Oeste": 5.1,
+          "Nordeste": 4.6,
+          "Sudeste": 5.0,
+          "Norte": 4.7,
+          "Sul": 5.2
+        },
+        {
+          "cluster": 2,
+          "Centro-Oeste": 5.1,
+          "Nordeste": 4.5,
+          "Sudeste": 5.0,
+          "Norte": 4.8,
+          "Sul": 5.1
+        },
+        {
+          "cluster": 3,
+          "Centro-Oeste": null,
+          "Nordeste": null,
+          "Sudeste": null,
+          "Norte": 3.9,
+          "Sul": null
+        }
+      ]
+    },
+    "cluster_sizes": {
+      "0": 1981,
+      "1": 1952,
+      "2": 1526,
+      "3": 111
+    }
+  },
+  "spatial": {
+    "permutations": 999,
+    "alpha": 0.05,
+    "apply_fdr": true,
+    "primary_variable": "ideb_early_years",
+    "moran": [
+      {
+        "variable": "ideb_early_years",
+        "moran_i": 0.6250154715787365,
+        "expected_i": -0.00018426386585590566,
+        "p_value": 0.001,
+        "z_score": 76.671833446427,
+        "permutations": 999,
+        "n": 5428
+      },
+      {
+        "variable": "ideb_late_years",
+        "moran_i": 0.5905401468668952,
+        "expected_i": -0.00018590816136828406,
+        "p_value": 0.001,
+        "z_score": 68.77693647064382,
+        "permutations": 999,
+        "n": 5380
+      }
+    ],
+    "lisa_counts": {
+      "ideb_early_years": {
+        "Baixo-Alto": 43,
+        "Alto-Alto": 575,
+        "Não significativo": 3953,
+        "Alto-Baixo": 39,
+        "Baixo-Baixo": 818
+      },
+      "ideb_late_years": {
+        "Não significativo": 4169,
+        "Alto-Alto": 538,
+        "Alto-Baixo": 32,
+        "Baixo-Alto": 13,
+        "Baixo-Baixo": 628
+      }
+    },
+    "cohesion": [
+      {
+        "cluster": 0,
+        "observed_share": 0.7231167452772703,
+        "expected_share": 0.3557830459770115,
+        "ratio": 2.032465440537022
+      },
+      {
+        "cluster": 1,
+        "observed_share": 0.5946518048208622,
+        "expected_share": 0.3505747126436782,
+        "ratio": 1.696219902275902
+      },
+      {
+        "cluster": 2,
+        "observed_share": 0.5307564482761332,
+        "expected_share": 0.27370689655172414,
+        "ratio": 1.9391416692923291
+      },
+      {
+        "cluster": 3,
+        "observed_share": 0.6127026377026377,
+        "expected_share": 0.01993534482758621,
+        "ratio": 30.7344890696242
+      }
+    ]
+  }
+}

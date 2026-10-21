@@ -234,6 +234,7 @@ ignore_names = ["cls"]
 # =============================================================================
 [tool.refurb]
 ignore = [
+    "FURB184",  # encadear atribuições em expressões polars reduz a legibilidade
     "FURB126",  # return implícito — às vezes reduz clareza em funções longas
 ]
 

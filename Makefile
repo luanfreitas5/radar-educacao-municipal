@@ -7,7 +7,7 @@ export PYTHONHASHSEED := 42
 
 .DEFAULT_GOAL := help
 .PHONY: help init install update lock export \
-	lint typecheck security deadcode complexity docstrings modernize quality check \
+	lint format-check typecheck security deadcode complexity docstrings modernize quality check \
 	test smoke test-all coverage hooks pre-commit update-hooks release \
 	ingest silver gold cluster spatial report reproduce \
 	docs docs-serve docs-deploy profile clean clean-outputs jupyter
@@ -38,6 +38,10 @@ export:  ## Exporta requirements.txt (para quem usa pip)
 lint:  ## Formata e aplica lint com ruff (corrige o que for possível)
 	uv run ruff format .
 	uv run ruff check --fix .
+
+format-check:  ## Verifica formatação e lint sem alterar arquivos (usado no CI)
+	uv run ruff format --check .
+	uv run ruff check .
 
 typecheck:  ## Type checking estático (basedPyright)
 	uv run basedpyright

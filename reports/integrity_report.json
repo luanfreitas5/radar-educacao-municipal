@@ -1,0 +1,49 @@
+{
+  "n_municipalities": 5570,
+  "coverage": {
+    "n_schools": 1.0,
+    "population": 1.0,
+    "gdp_per_capita": 1.0,
+    "ideb_early_years": 0.9748653500897666,
+    "ideb_late_years": 0.9662477558348295
+  },
+  "duplicate_keys": {
+    "gold": 0,
+    "censo_escolar": 0,
+    "ideb": 0,
+    "sidra": 0
+  },
+  "orphan_keys": {
+    "censo_escolar": 0,
+    "ideb": 0,
+    "sidra": 0
+  },
+  "null_share": {
+    "code_muni": 0.0,
+    "name_muni": 0.0,
+    "abbrev_state": 0.0,
+    "region": 0.0,
+    "n_schools": 0.0,
+    "enrollments": 0.0,
+    "teachers": 0.0,
+    "rural_share": 0.0,
+    "municipal_network_share": 0.0,
+    "internet_share": 0.0,
+    "library_share": 0.0,
+    "computer_lab_share": 0.0,
+    "sports_court_share": 0.0,
+    "water_network_share": 0.0,
+    "sewage_network_share": 0.0,
+    "electricity_network_share": 0.0,
+    "students_per_teacher": 0.0,
+    "enrollments_per_school": 0.0,
+    "ideb_early_years": 0.025134649910233394,
+    "ideb_late_years": 0.03375224416517056,
+    "population": 0.0,
+    "area_km2": 0.0,
+    "population_density": 0.0,
+    "gdp_per_capita": 0.0
+  },
+  "violations": [],
+  "passed": true
+}
