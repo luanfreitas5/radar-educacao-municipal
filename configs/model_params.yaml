@@ -1,0 +1,51 @@
+# Hiperparâmetros da clusterização, do UMAP e da análise espacial.
+
+clustering:
+  # Variáveis estruturais e socioeconômicas. O IDEB NÃO entra aqui de propósito:
+  # ele é o desfecho usado para perfilar e validar as tipologias (evita circularidade).
+  features:
+    - enrollments_per_school
+    - students_per_teacher
+    - rural_share
+    - municipal_network_share
+    - internet_share
+    - library_share
+    - computer_lab_share
+    - sports_court_share
+    - water_network_share
+    - sewage_network_share
+    - electricity_network_share
+    - population
+    - population_density
+    - gdp_per_capita
+  # Variáveis assimétricas: recebem log1p antes da padronização.
+  log_features:
+    - enrollments_per_school
+    - students_per_teacher
+    - population
+    - population_density
+    - gdp_per_capita
+  outcomes:
+    - ideb_early_years
+    - ideb_late_years
+  k_min: 3                  # silhouette tende a favorecer k=2; exigimos tipologias mais ricas
+  k_max: 10
+  k: null                   # fixe um inteiro para ignorar a seleção automática por silhouette
+  n_init: 20
+  stability_repeats: 30     # subamostragens para estimar a estabilidade (ARI)
+  subsample_fraction: 0.8
+  bootstrap_resamples: 2000 # IC 95% da mediana do IDEB por cluster
+  min_slice_size: 10        # células cluster x região menores que isto não são reportadas
+
+umap:
+  n_neighbors: 15
+  min_dist: 0.1
+
+spatial:
+  variables:
+    - ideb_early_years
+    - ideb_late_years
+  primary_variable: ideb_early_years   # variável do mapa LISA principal
+  permutations: 999
+  alpha: 0.05
+  apply_fdr: true                      # correção de Benjamini-Hochberg nos p-valores locais

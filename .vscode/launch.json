@@ -1,0 +1,34 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Pipeline: etapa (escolha ao iniciar)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/main.py",
+      "args": ["${input:stage}"],
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONHASHSEED": "42" },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Pytest: arquivo atual",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["${file}", "--no-cov", "-x"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "stage",
+      "type": "pickString",
+      "description": "Etapa do pipeline",
+      "options": ["ingest", "silver", "gold", "cluster", "spatial", "report", "all"],
+      "default": "silver"
+    }
+  ]
+}

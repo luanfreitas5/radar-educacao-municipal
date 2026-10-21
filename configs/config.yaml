@@ -1,0 +1,29 @@
+# Configurações gerais do projeto (validadas em src/config/settings.py).
+
+project:
+  name: radar-educacao-municipal
+  random_seed: 42
+
+# Ano de referência de cada fonte. Mudar um ano muda o snapshot em data/bronze.
+reference:
+  censo_escolar: 2023
+  ideb: 2023
+  sidra_population: 2022   # Censo Demográfico 2022
+  sidra_gdp: 2021          # PIB dos Municípios (último ano disponível na tabela 5938)
+  geobr: 2022              # malha municipal; deve ser compatível com os códigos das demais fontes
+
+# Testes de integridade da base municipal (etapa gold).
+integrity:
+  # Cobertura mínima: fração dos municípios da malha com valor não nulo na coluna.
+  min_coverage:
+    n_schools: 0.98
+    population: 0.99
+    gdp_per_capita: 0.98
+    ideb_early_years: 0.90
+    ideb_late_years: 0.85
+  # Fração máxima de nulos por coluna (padrão) e exceções.
+  max_null_share: 0.02
+  null_share_overrides:
+    students_per_teacher: 0.05
+    ideb_early_years: 0.10
+    ideb_late_years: 0.15

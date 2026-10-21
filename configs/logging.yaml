@@ -1,0 +1,4 @@
+# Configuração de logging (console com rich + arquivo com rotação diária).
+
+logging:
+  level: INFO   # DEBUG | INFO | WARNING | ERROR | CRITICAL

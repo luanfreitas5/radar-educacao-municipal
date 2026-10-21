@@ -1,0 +1,10 @@
+# Caminhos relativos à raiz do repositório (resolvidos em src/config/paths.py).
+
+paths:
+  bronze: data/bronze
+  silver: data/silver
+  gold: data/gold
+  staging: data/silver/_staging   # arquivos temporários extraídos de .zip (descartáveis)
+  reports: reports
+  figures: reports/figures
+  logs: logs

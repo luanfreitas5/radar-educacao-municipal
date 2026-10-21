@@ -1,0 +1,33 @@
+# Fontes de dados. As URLs são modelos; {year} vem de `reference` em config.yaml.
+#
+# ATENÇÃO: o INEP reorganiza periodicamente os caminhos de download. Se uma URL
+# retornar 404, confirme o endereço atual em https://www.gov.br/inep/pt-br/
+# (Censo Escolar e IDEB > Resultados) e atualize apenas este arquivo.
+
+data_sources:
+  request_timeout_seconds: 300
+
+  # Microdados do Censo Escolar (arquivo .zip com o CSV da Educação Básica).
+  censo_escolar_url: "https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_{year}.zip"
+
+  # Planilhas do IDEB por município (.xlsx, ou .zip contendo o .xlsx).
+  ideb_urls:
+    early_years: "https://download.inep.gov.br/ideb/resultados/divulgacao_anos_iniciais_municipios_{year}.xlsx"
+    late_years: "https://download.inep.gov.br/ideb/resultados/divulgacao_anos_finais_municipios_{year}.xlsx"
+  ideb_network: "Pública"   # valor da coluna REDE usado como indicador municipal
+
+  # API SIDRA (IBGE). `variables` mapeia código da variável -> nome da coluna.
+  # Os intervalos plausíveis em src/schemas/silver.py detectam mapeamentos errados.
+  sidra_base_url: "https://apisidra.ibge.gov.br/values"
+  sidra_tables:
+    population:
+      table: 4714              # População residente, área e densidade (Censo 2022)
+      variables:
+        "93": population
+        "6318": area_km2
+      reference: sidra_population
+    gdp:
+      table: 5938              # PIB dos Municípios
+      variables:
+        "37": gdp_thousand_brl # PIB a preços correntes (mil reais)
+      reference: sidra_gdp
