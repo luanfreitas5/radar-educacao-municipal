@@ -79,11 +79,65 @@ Pydantic na inicialização.
 
 ## 📊 Resultados
 
-Os números dependem da execução do pipeline com os dados reais e **são gerados
-automaticamente** em [`reports/relatorio.md`](reports/relatorio.md), com figuras em
-`reports/figures/` (PNG 300 dpi + SVG). Esta seção será preenchida com os achados após a
-primeira execução completa (`make reproduce`): tipologias encontradas, estabilidade (ARI),
-diferenças de IDEB entre clusters com IC 95%, I de Moran e mapa LISA.
+Números gerados por `make reproduce` e registrados em
+[`reports/results.json`](reports/results.json) e [`reports/relatorio.md`](reports/relatorio.md);
+figuras em `reports/figures/` (PNG 300 dpi + SVG). SHA-256 da base gold:
+`3eb86d80…a71d3`.
+
+**Resumo:** quatro tipologias estáveis (ARI 0,98), com IDEB claramente diferente entre
+elas (ε² ≈ 0,19–0,24) e forte autocorrelação espacial do IDEB (I de Moran ≈ 0,59–0,63).
+
+### Integridade da base
+
+5.570 municípios, 0 chaves duplicadas, 0 chaves órfãs. Cobertura: Censo Escolar, população
+e PIB per capita 100%; IDEB anos iniciais 97,5% e anos finais 96,6%.
+
+### Tipologias (KMeans, k = 4)
+
+- k escolhido por silhouette (0,189; k = 3: 0,173, k = 5: 0,146). O valor é **baixo**: os
+  grupos se sobrepõem e devem ser lidos como perfis, não como categorias bem separadas.
+- Estabilidade por subamostragem (30 repetições): ARI = **0,98** [IC 95%: 0,95; 0,99].
+
+| Cluster | Municípios | Perfil (z-score da mediana) | IDEB anos iniciais (mediana, IC 95%) | IDEB anos finais (mediana, IC 95%) |
+|---|---|---|---|---|
+| 0 | 1.981 (36%) | mais rural, rede municipal, poucos laboratórios de informática | 5,2 [5,1; 5,2] | 4,3 [4,3; 4,4] |
+| 1 | 1.952 (35%) | água encanada, menos alunos por docente, mais bibliotecas | 6,2 [6,2; 6,3] | 5,1 [5,0; 5,1] |
+| 2 | 1.526 (27%) | urbano, esgotamento sanitário, escolas maiores | 6,1 [6,1; 6,2] | 5,0 [5,0; 5,0] |
+| 3 | 111 (2%) | infraestrutura crítica: energia (−5,9), internet (−3,9), água (−2,5); os municípios com IDEB estão todos na região Norte | 4,6 [4,3; 4,8] | 3,9 [3,8; 4,2] |
+
+O IDEB **não entra** na clusterização, e ainda assim difere entre os grupos
+(Kruskal-Wallis, anos iniciais: H = 1324,8, p ≈ 6e-287, ε² = 0,24, n = 5.430; anos finais:
+H = 1045,1, p ≈ 3e-226, ε² = 0,19, n = 5.382). Efeito grande, mas ε² mede associação,
+não causalidade. Os clusters 1 e 2 têm IDEB quase idêntico: o que os separa é o perfil
+urbano/rural, não o desempenho. Por região, a ordem entre clusters se mantém, mas o nível
+varia mais por região do que entre clusters 1 e 2 (ex.: anos iniciais no cluster 2, Sul 6,2
+vs. Nordeste 5,4) — ver `median_by_region` em `results.json`.
+
+### Análise espacial (Queen, 999 permutações, FDR)
+
+| Variável | I de Moran | z | p | n |
+|---|---|---|---|---|
+| IDEB anos iniciais | **0,625** | 76,7 | 0,001 | 5.428 |
+| IDEB anos finais | **0,591** | 68,8 | 0,001 | 5.380 |
+
+(p = 0,001 é o mínimo possível com 999 permutações.)
+
+| LISA (FDR) | Alto-Alto | Baixo-Baixo | Alto-Baixo | Baixo-Alto | Não signif. |
+|---|---|---|---|---|---|
+| Anos iniciais | 575 | 818 | 39 | 43 | 3.953 |
+| Anos finais | 538 | 628 | 32 | 13 | 4.169 |
+
+Os aglomerados Baixo-Baixo são mais numerosos que os Alto-Alto nas duas etapas. As
+tipologias também são **territorialmente coesas**: a fração de vizinhos no mesmo cluster
+é 1,7× a 2,0× a esperada ao acaso nos clusters 0–2 e **30,7×** no cluster 3 (observada
+0,61 vs. 0,02 esperada), isto é, os municípios de infraestrutura crítica formam um bloco
+geográfico contíguo.
+
+![Mapa LISA do IDEB (anos iniciais)](reports/figures/lisa_ideb_early_years.png)
+![Mapa das tipologias](reports/figures/cluster_map.png)
+
+> Não há baseline preditivo nem modelo supervisionado: o estudo é descritivo/exploratório.
+> Cobertura de IDEB menor que 100% e a baixa silhouette são as principais ressalvas.
 
 ## ⚠️ Limitações
 
