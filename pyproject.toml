@@ -76,47 +76,44 @@ dependencies = [
 # `pythonpath = ["src"]` e, ao executar `python src/main.py`, o diretório do
 # script já entra no `sys.path`.
 package = false
+# `quality` e `docs` entram por padrão para que `uv sync --dev` (usado nos
+# workflows do CI) continue instalando as ferramentas dos jobs de qualidade.
+default-groups = ["dev", "quality", "docs"]
 required-environments = [
     "sys_platform == 'win32' and platform_machine == 'AMD64'",
     "sys_platform == 'linux' and platform_machine == 'x86_64'",
 ]
 
-# --- Dependências de desenvolvimento (não publicadas; PEP 735) --------------
+# --- Grupos de dependência (não publicados; PEP 735) -------------------------
 [dependency-groups]
 dev = [
-    # Lint + format
     "ruff>=0.5",                    # linter e formatador (substitui flake8/isort/black)
-    # Type checking (roda no CI, não no pre-commit)
-    "basedpyright>=1.13",           # type checker estático (substitui mypy)
-    # Segurança (roda no CI)
-    "bandit>=1.7",                  # análise de segurança do código
-    "pip-audit>=2.7",               # auditoria de vulnerabilidades em dependências
+    "basedpyright>=1.13",           # type checker estático (roda no CI)
+    "pytest>=8.2",
+    "pytest-cov>=5.0",
+    "hypothesis>=6.100",            # testes baseados em propriedades
+    "pre-commit>=3.7",
+    "commitizen>=4.0",              # Conventional Commits + CHANGELOG
     "detect-secrets>=1.5",          # detecção de segredos
-    # Qualidade / complexidade / docstrings
+    "nbqa>=1.8",                    # aplica linters a notebooks
+    "nbstripout>=0.7",              # remove outputs de notebooks
+    "scalene>=1.5",                 # profiling sob demanda
+    "ipykernel>=6.29",
+    "ipywidgets>=8.1",
+    "jupyterlab>=4.2",
+]
+quality = [
+    "bandit[toml]>=1.7",            # análise de segurança do código
     "vulture>=2.11",                # código morto
     "refurb>=2.0",                  # sugestões de modernização
     "xenon>=0.9",                   # limites de complexidade
     "radon>=6.0",                   # métricas de complexidade
     "interrogate>=1.7",             # cobertura de docstrings
-    # Testes
-    "pytest>=8.2",
-    "pytest-cov>=5.0",
-    "hypothesis>=6.100",            # testes baseados em propriedades
-    # Notebooks
-    "nbqa>=1.8",                    # aplica linters a notebooks
-    "nbstripout>=0.7",              # remove outputs de notebooks
-    # Workflow
-    "pre-commit>=3.7",
-    "commitizen>=4.0",              # Conventional Commits + CHANGELOG
-    # Documentação
+    "pip-audit>=2.7",               # vulnerabilidades em dependências
+]
+docs = [
     "mkdocs-material>=9.5",
     "mkdocstrings[python]>=0.25",
-    # Profiling (use sob demanda)
-    "scalene>=1.5",
-    # Jupyter / VS Code
-    "ipykernel>=6.29",
-    "ipywidgets>=8.1",
-    "jupyterlab>=4.2",
 ]
 
 [project.urls]
@@ -153,13 +150,17 @@ select = [
     "RUF",    # regras específicas do Ruff
     "PL",     # pylint (subconjunto)
     "TRY",    # tryceratops
+    "S",      # flake8-bandit
+    "D",      # pydocstyle (convenção numpy)
 ]
 ignore = [
     "PLR0913", # muitos argumentos — comum em pipelines
     "PLR0917", # muitos argumentos posicionais — idem
     "PLR2004", # "magic value" em comparação — comum em limiares
     "TRY003",  # mensagem longa em exceção customizada
-    "PD901",   # `df` é o nome padrão para DataFrames (polars) neste projeto
+    "D203",    # conflita com D211 (convenção numpy)
+    "D213",    # conflita com D212 (convenção numpy)
+    "D401",    # heurística de imperativo só vale para inglês; docstrings são pt-BR
     "RUF001",  # caracteres tipográficos pt-BR intencionais em strings
     "RUF002",  # idem, em docstrings
     "RUF003",  # idem, em comentários
@@ -188,7 +189,7 @@ known-first-party = [
 convention = "numpy"  # docstrings no formato NumPy
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["ARG", "PLR2004", "PD011"]   # fixtures, valores fixos e `.values` em testes
+"tests/*" = ["S101", "D", "ARG", "PLR2004", "PD011"]   # asserts, docstrings, fixtures e valores fixos
 "notebooks/*" = ["E402", "F401", "F821", "NPY002"]
 "src/main.py" = ["E402"]
 
@@ -271,6 +272,7 @@ omit = [
 [tool.coverage.report]
 fail_under = 80
 show_missing = true
+exclude_also = ["if __name__ == .__main__.:"]
 
 # =============================================================================
 # INTERROGATE — cobertura de docstrings
@@ -286,10 +288,7 @@ exclude = ["tests", "notebooks", "docs"]
 # =============================================================================
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0"
-version_files = [
-    "pyproject.toml:version",
-]
+version_provider = "pep621"
 tag_format = "v$version"
 update_changelog_on_bump = true
 major_version_zero = true  # remova quando sair do 0.x

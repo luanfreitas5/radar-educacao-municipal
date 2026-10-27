@@ -5,8 +5,10 @@ import logging
 import numpy as np
 import polars as pl
 import pytest
+import yaml
 
 from config.logging import configure_logging
+from config.paths import CONFIG_DIR
 from exceptions import RadarError
 from reporting.report import LIMITATIONS, build_report, dataframe_to_markdown
 from reporting.results import load_results, update_results
@@ -76,8 +78,12 @@ def test_configure_logging_is_idempotent_and_writes_file(tmp_path):
     root = logging.getLogger()
     original_handlers, original_level = list(root.handlers), root.level
     try:
-        configure_logging("INFO", tmp_path)
-        configure_logging("INFO", tmp_path)
+        config = yaml.safe_load((CONFIG_DIR / "logging.yaml").read_text(encoding="utf-8"))
+        config["handlers"]["file"]["filename"] = str(tmp_path / "log.log")  # caminho absoluto
+        config_path = tmp_path / "logging.yaml"
+        config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+        configure_logging("INFO", config_path)
+        configure_logging("INFO", config_path)
         assert len(root.handlers) == 2
         logging.getLogger("teste").info("mensagem de teste")
         for handler in root.handlers:

@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 CONFIG_FILES = (
     "config.yaml",
     "paths.yaml",
-    "logging.yaml",
     "data_sources.yaml",
     "model_params.yaml",
 )
@@ -63,12 +62,6 @@ class IntegrityConfig(_FrozenModel):
         if any(not 0 <= value <= 1 for value in values):
             raise ValueError("limiares de cobertura e nulos devem estar entre 0 e 1")
         return self
-
-
-class LoggingConfig(_FrozenModel):
-    """Nível de log."""
-
-    level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 
 
 class SidraTable(_FrozenModel):
@@ -147,7 +140,6 @@ class Settings(_FrozenModel):
     reference: ReferenceYears
     integrity: IntegrityConfig
     paths: PathsConfig
-    logging: LoggingConfig
     data_sources: DataSourcesConfig
     clustering: ClusteringConfig
     umap: UmapConfig

@@ -106,7 +106,7 @@ def run(argv: Sequence[str] | None = None) -> int:
         settings = load_settings(args.config_dir)
         paths = build_paths(settings.paths)
         paths.ensure_directories()
-        configure_logging(args.log_level or settings.logging.level, paths.logs)
+        configure_logging(args.log_level)
         seed_everything(settings.project.random_seed)
         stages = STAGES if args.stage == "all" else (args.stage,)
         for stage in stages:

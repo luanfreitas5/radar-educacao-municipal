@@ -6,9 +6,9 @@ PIPELINE := uv run python src/main.py
 export PYTHONHASHSEED := 42
 
 .DEFAULT_GOAL := help
-.PHONY: help init install update lock export \
-	lint format-check typecheck security deadcode complexity docstrings modernize quality check \
-	test smoke test-all coverage hooks pre-commit update-hooks release \
+.PHONY: help install update lock export \
+	lint format typecheck security quality check pre-commit update-hooks release \
+	test smoke test-all coverage \
 	ingest silver gold cluster spatial report reproduce \
 	docs docs-serve docs-deploy profile clean clean-outputs jupyter
 
@@ -17,16 +17,16 @@ help:  ## Lista os alvos disponíveis
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
 
 # --- Ambiente --------------------------------------------------------------
-init:  ## Instala dependências e hooks do pre-commit
-	$(MAKE) install
-	$(MAKE) hooks
-
-install:  ## Instala dependências (runtime + dev)
-	uv sync --dev
+install:  ## Instala todas as dependências e os hooks do pre-commit
+	uv sync --all-groups
+	uv run pre-commit install --hook-type pre-commit --hook-type commit-msg
 
 update:  ## Atualiza todas as dependências e sincroniza
 	uv lock --upgrade
 	uv sync --all-groups
+
+hooks:  ## Instala os hooks do pre-commit (para quem já tem o ambiente)
+	uv run detect-secrets scan > .secrets.baseline
 
 lock:  ## Gera/atualiza o uv.lock
 	uv lock
@@ -35,36 +35,37 @@ export:  ## Exporta requirements.txt (para quem usa pip)
 	uv export --no-hashes -o requirements.txt
 
 # --- Qualidade -------------------------------------------------------------
-lint:  ## Formata e aplica lint com ruff (corrige o que for possível)
-	uv run ruff format .
-	uv run ruff check --fix .
+lint:  ## Verifica lint e formatação sem alterar arquivos (usado no CI)
+	uv run ruff check src tests
+	uv run ruff format --check src tests
 
-format-check:  ## Verifica formatação e lint sem alterar arquivos (usado no CI)
-	uv run ruff format --check .
-	uv run ruff check .
+format:  ## Corrige lint e formata o código com ruff
+	uv run ruff check --fix src tests
+	uv run ruff format src tests
 
 typecheck:  ## Type checking estático (basedPyright)
 	uv run basedpyright
 
 security:  ## Análise de segurança (bandit + pip-audit)
-	uv run bandit -r src -c pyproject.toml
+	uv run bandit -c pyproject.toml -r src
 	uv run pip-audit
 
-deadcode:  ## Detecta código morto (vulture)
-	uv run vulture src
-
-complexity:  ## Limites de complexidade (xenon)
-	uv run xenon --max-absolute B --max-modules A --max-average A src
-
-docstrings:  ## Cobertura de docstrings (interrogate)
-	uv run interrogate -v src
-
-modernize:  ## Detecta código redundante (refurb)
+quality:  ## Código morto, modernização, complexidade e docstrings
+	uv run vulture
 	uv run refurb src
+	uv run xenon --max-absolute B --max-modules A --max-average A src
+	uv run interrogate src
 
-quality: format-check typecheck security deadcode complexity docstrings modernize  ## Suíte de qualidade completa (espelha o CI)
+check: lint typecheck security quality test  ## Roda tudo o que o CI roda (espelha o CI)
 
-check: quality test  ## Roda tudo o que o CI roda (qualidade + testes)
+pre-commit:  ## Roda todos os hooks do pre-commit em todos os arquivos
+	uv run pre-commit run --all-files
+
+update-hooks:  ## Atualiza as versões dos hooks do pre-commit
+	uv run pre-commit autoupdate
+
+release:  ## Cria uma nova release (versão + changelog + tag)
+	uv run cz bump --changelog
 
 # --- Testes ----------------------------------------------------------------
 test:  ## Roda os testes com cobertura
@@ -79,20 +80,6 @@ test-all:  ## Roda a suíte completa, inclusive os testes lentos
 coverage:  ## Gera o relatório de cobertura em HTML
 	uv run pytest -m "not slow" --cov-report=html
 	@echo "Relatório disponível em htmlcov/index.html"
-
-hooks:  ## Instala os hooks do pre-commit e gera o baseline do detect-secrets
-	uv run pre-commit install
-	uv run pre-commit install --hook-type commit-msg
-	uv run detect-secrets scan > .secrets.baseline
-
-pre-commit:  ## Roda todos os hooks do pre-commit em todos os arquivos
-	uv run pre-commit run --all-files
-
-update-hooks:  ## Atualiza as versões dos hooks do pre-commit
-	uv run pre-commit autoupdate
-
-release:  ## Cria uma nova release (versão + changelog + tag)
-	uv run cz bump --changelog
 
 # --- Pipeline (bronze -> silver -> gold -> análises -> relatório) -----------
 ingest:  ## Etapa 1: baixa as fontes para data/bronze (idempotente, com cache)

@@ -34,7 +34,7 @@ def _copy_configs(destination: Path) -> Path:
 def test_unknown_field_is_rejected(tmp_path):
     """Campos desconhecidos falham na inicialização (extra='forbid')."""
     config_dir = _copy_configs(tmp_path / "configs")
-    with (config_dir / "logging.yaml").open("a", encoding="utf-8") as handle:
+    with (config_dir / "paths.yaml").open("a", encoding="utf-8") as handle:
         handle.write("  nivel_inexistente: 1\n")
     with pytest.raises(ConfigurationError):
         load_settings(config_dir)

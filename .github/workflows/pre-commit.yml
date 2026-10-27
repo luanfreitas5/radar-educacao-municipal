@@ -1,7 +1,7 @@
 # =============================================================================
 # Pre-commit — roda todos os hooks de .pre-commit-config.yaml sobre o repo
 # inteiro no CI (Ruff, detect-secrets, nbstripout, higiene de arquivos).
-# Garante que quem esqueceu de rodar `make hooks` localmente não quebre o
+# Garante que quem esqueceu de rodar `make install` localmente não quebre o
 # padrão do projeto. O hook do commitizen (stage commit-msg) não roda aqui,
 # pois não se aplica a --all-files.
 # =============================================================================
