@@ -6,7 +6,7 @@ PIPELINE := uv run python src/main.py
 export PYTHONHASHSEED := 42
 
 .DEFAULT_GOAL := help
-.PHONY: help install update lock export \
+.PHONY: help install update hooks lock export \
 	lint format typecheck security quality check pre-commit update-hooks release \
 	test smoke test-all coverage \
 	ingest silver gold cluster spatial report reproduce \
