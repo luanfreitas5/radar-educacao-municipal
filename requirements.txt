@@ -302,7 +302,7 @@ llvmlite==0.50.0
     # via
     #   numba
     #   pynndescent
-mando==0.7.1
+mando==0.8.2
     # via radon
 markdown==3.10.3 ; python_full_version < '3.11'
     # via
