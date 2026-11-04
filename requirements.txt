@@ -879,7 +879,7 @@ typing-inspect==0.9.0
     # via pandera
 typing-inspection==0.4.4
     # via pydantic
-tzdata==2026.5
+tzdata==2026.6
     # via
     #   arrow
     #   pandas
